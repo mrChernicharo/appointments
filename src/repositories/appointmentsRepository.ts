@@ -2,6 +2,10 @@ import { isEqual } from 'date-fns';
 
 import Appointment from '../models/Appointment';
 
+interface CreateAppointmentDTO {
+  provider: string;
+  date: Date;
+}
 class AppointmentsRepository {
   private appointments: Appointment[];
 
@@ -21,8 +25,8 @@ class AppointmentsRepository {
     return findAppointment || null;
   }
 
-  public create(provider: string, date: Date): Appointment {
-    const appointment = new Appointment(provider, date);
+  public create({ provider, date }: CreateAppointmentDTO): Appointment {
+    const appointment = new Appointment({ provider, date });
 
     this.appointments.push(appointment);
 
@@ -31,10 +35,12 @@ class AppointmentsRepository {
 }
 
 export default AppointmentsRepository;
+
 // persistência <-> repository <-> rota
 
-// o repositório é quem vai buscar e manipular informaçoes dentro do banco
+// no método Create() é melhor usar um objeto (DTO) do que passar parâmetros soltos
+// pra fazer isso, é preciso criar uma interface com esse DTO
 
-// ele faz isso usando métodos como find, update, delete etc.
-
-// um repositório por Model
+// após mudar o constructor da classe Appointment lá no model (agora ele espera receber um objeto),
+// é preciso adaptar também a passada de parâmetros na hora de instanciar o novo Appointment
+//

@@ -26,7 +26,8 @@ appointmentsRouter.post('/', (request, response) => {
       .json({ message: 'This appointment is already booked' });
   }
 
-  const appointment = appointments.create(provider, parsedDate);
+  // ajeitamos aqui: não mais parametros soltos, e sim o envio dos dados dentro de um objeto
+  const appointment = appointments.create({ provider, date: parsedDate });
 
   return response.json(appointment);
 });
