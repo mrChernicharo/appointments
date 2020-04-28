@@ -1,20 +1,22 @@
 import { Router } from 'express';
-import { startOfHour, parseISO, isEqual } from 'date-fns';
+import { startOfHour, parseISO } from 'date-fns';
 
-import Appointment from '../models/Appointment';
+import AppointmentsRepository from '../repositories/appointmentsRepository';
 
 const appointmentsRouter = Router();
 
-const appointments: Appointment[] = [];
+const appointments = new AppointmentsRepository();
 
 appointmentsRouter.post('/', (request, response) => {
   const { provider, date } = request.body;
 
   const parsedDate = startOfHour(parseISO(date));
 
-  const findAppointmentInSameDate = appointments.find(appointment =>
-    isEqual(parsedDate, appointment.date)
-  );
+  // const findAppointmentInSameDate = appointments.find(appointment =>
+  //   isEqual(parsedDate, appointment.date)
+  // );
+
+  const findAppointmentInSameDate = appointments.findByDate(parsedDate);
 
   if (findAppointmentInSameDate) {
     return response
@@ -28,11 +30,11 @@ appointmentsRouter.post('/', (request, response) => {
   //   date: parsedDate,
   // };
 
-  // criação de novvo Appointment: os dados obtidos no request.body são passados pro constructor
+  // const appointment = new Appointment(provider, parsedDate);
 
-  const appointment = new Appointment(provider, parsedDate);
+  // appointments.push(appointment);
 
-  appointments.push(appointment);
+  const appointment = appointments.create(provider, parsedDate);
 
   return response.json(appointment);
 });
